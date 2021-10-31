@@ -22,64 +22,86 @@ var fightOrSkip = function() {
   
         // return true if player wants to leave
         return true;
-      }
     }
     return false;
+    }
   }
 
 
-var fight = function (enemy) {
-    //repeat and execute as long as the enemy-robot is alive
+  var fight = function(enemy) {
+    // keep track of who goes first
+    var isPlayerTurn = true;
+  
+    // randomly change turn order
+    if (Math.random() > 0.5) {
+      isPlayerTurn = false;
+    }
+  
     while (playerInfo.health > 0 && enemy.health > 0) {
-        // ask player if they'd like to fight or run
+      if (isPlayerTurn) {
+        // ask player if they'd like to fight or skip using fightOrSkip function
         if (fightOrSkip()) {
-            // if true, leave fight by breaking loop
-            break;
-          }
-        
-
-        // generate random damage value based on player's attack power
+          // if true, leave fight by breaking loop
+          break;
+        }
+  
         var damage = randomNumber(playerInfo.attack - 3, playerInfo.attack);
-
+  
+        // remove enemy's health by subtracting the amount we set in the damage variable
         enemy.health = Math.max(0, enemy.health - damage);
         console.log(
-            playerInfo.name + " attacked " + enemy.name + ". " + enemy.name + " now has " + enemy.health + " health remaining."
+          playerInfo.name +
+            " attacked " +
+            enemy.name +
+            ". " +
+            enemy.name +
+            " now has " +
+            enemy.health +
+            " health remaining."
         );
-
-
+  
         // check enemy's health
         if (enemy.health <= 0) {
-            window.alert(enemy.name + " has died!");
-
-            //award player money for winning
-            playerInfo.money = playerInfo.money + 20;
-
-            //leave while() loop since enemy is dead
-            break;
+          window.alert(enemy.name + " has died!");
+  
+          // award player money for winning
+          playerInfo.money = playerInfo.money + 20;
+  
+          // leave while() loop since enemy is dead
+          break;
         } else {
-            window.alert(enemy.name + " still has " + enemy.health + " health left.");
+          window.alert(enemy.name + " still has " + enemy.health + " health left.");
         }
-
-        // remove player's health by subtracting the amount set in the enemy.attack variable
-        var damage = randomNumber(enemy.attack - 3, enemy.attack)
-
+        // player gets attacked first
+      } else {
+        var damage = randomNumber(enemy.attack - 3, enemy.attack);
+  
+        // remove player's health by subtracting the amount we set in the damage variable
         playerInfo.health = Math.max(0, playerInfo.health - damage);
         console.log(
-            enemy.name + " attacked " + playerInfo.name + ". " + playerInfo.name + " now has " + playerInfo.health + " health remaining."
+          enemy.name +
+            " attacked " +
+            playerInfo.name +
+            ". " +
+            playerInfo.name +
+            " now has " +
+            playerInfo.health +
+            " health remaining."
         );
-
+  
         // check player's health
         if (playerInfo.health <= 0) {
-            window.alert(playerInfo.name + " has died!");
-            // leave while() loop if player is dead
-            break;
+          window.alert(playerInfo.name + " has died!");
+          // leave while() loop if player is dead
+          break;
         } else {
-            window.alert(playerInfo.name + " still has " + playerInfo.health + " health left.");
+          window.alert(playerInfo.name + " still has " + playerInfo.health + " health left.");
         }
+      }
+      // switch turn order for next round
+      isPlayerTurn = !isPlayerTurn;
     }
-
-};
-
+  };
 
 // Game States
 // "WIN" - Player robot has defeated all enemy-robots
@@ -246,18 +268,3 @@ var enemyInfo = [
 
 // Start the game when the page loads
 startGame();
-
-
-// When the player is defeated or there are no more enemies, call an endGame() function that:
-// Alerts the player's total stats
-// Asks the player if they want to play again
-// If yes, call startGame() to restart the game
-// After the player skips or defeats an enemy (and there are still more robots to fight):
-// Ask the player if they want to "shop"
-// If no, continue as normal
-// If yes, call the shop() function
-// In the shop() function, ask player if they want to "refill" health, "upgrade" attack, or "leave" the shop
-// If refill, subtract money points from player and increase health
-// If upgrade, subtract money points from player and increase attack power
-// If leave, alert goodbye and exit the function
-// If any other invalid option, call shop() again
